@@ -6,8 +6,8 @@ const TodoForm = (props) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("");
-  
-  const { urlEndpoint,setRefetch } = props;
+  const [payLoad, setPayload] = useState("")
+  const { urlEndpoint, setRefetch } = props;
   
   const navigate = useNavigate();
   const navigateToHome = () => {
@@ -17,7 +17,7 @@ const TodoForm = (props) => {
       const handleAddNewTodo = async () => {
         setRefetch(true)
 
-        const resultAddBlog = await fetch(`${urlEndpoint}/todos/add-todo`,{
+        const addBlogResponse = await fetch(`${urlEndpoint}/todos/add-todo`,{
           method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -28,9 +28,17 @@ const TodoForm = (props) => {
                 priority,
             })
         });
+
+        const payloadresponse = await addBlogResponse.json()
+        setPayload(payloadresponse)
        
-        setRefetch(false) 
+        setRefetch(false)
+        if(payloadresponse.success === true){
+        navigateToHome();
+        }
+        
       };
+      console.log(priority)
   return (
     <div>
       <h1>Create Todo Form</h1>
@@ -53,22 +61,25 @@ const TodoForm = (props) => {
       <select
         onChange={(e) => {
           setPriority(e.target.value);
+          console.log(e.target.value)
+          
         }}
       >
         <option></option>
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
+        <option >Low</option>
+        <option >Medium</option>
+        <option >High</option>
       </select>
       <br></br>
       <button
         onClick={() => {
-          navigateToHome();
           handleAddNewTodo();
         }}
       >
         Create New Todo
       </button>
+      <br/>
+      {payLoad.message}
     </div>
   );
 };
